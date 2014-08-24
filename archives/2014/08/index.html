@@ -1,0 +1,289 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Archives: 2014/8 | Ox Patient</title>
+  <meta name="author" content="sungang">
+  
+  <meta name="description" content="Like Programmer Like ape">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+  <meta property="og:site_name" content="Ox Patient"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Ox Patient" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">Ox Patient</a></h1>
+  <h2><a href="/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div></header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper">
+<h2 class="archive-title">2014/8</h2>
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2014-08-24T07:32:44.000Z"><a href="/2014/08/24/windows 7 install linux/">Aug 24 2014</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2014/08/24/windows 7 install linux/">Win7(64bit)下安装CentOS-6.4(64bit)，有图有真相</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="背景介绍">背景介绍</h2>
+<p>出于某种原因，需要在Win7下安装linux系统。但是之前从未装过双系统，因此首先上网查阅相关资料，翻阅无数，直到看到大神Mr.Johness的两篇文章：<a href="http://www.cnblogs.com/Johness/p/3389376.html" target="_blank" rel="external">适用于CentOS6.4的Win7双系统安装方式</a>和<a href="http://www.cnblogs.com/Johness/archive/2012/12/03/2800126.html" target="_blank" rel="external">最清晰细致的教程！一步一步教你打造Win7+CentOS双系统</a>，真是无比感谢！</p>
+<p>看过这两篇文章之后，我开始了双系统安装的“旅程”。我使用的笔记本是联想T420，之前预装过Win7旗舰版(64bit)，但是一直是我老婆在用，总之一个字：乱，因此索性一起重装了。</p>
+<h2 id="失败经历">失败经历</h2>
+<p>首先重装Win7系统，Win7系统的安装要简单的多，网上有很多如何安装Win7系统的帖子，基本上照做就可以了。因为身边刚好有个15G左右的u盘，于是就使用u盘进行安装了，在磁盘管理里将u盘标记为活动分区，然后将下载好的iso解压至u盘，再在bios中设置usb启动，差不多就可以进行安装了。安装Win7系统的时候我将硬盘进行了重新分区，原有的system_drv、lenovo_recovery以及系统分区我没有删除，而是将其他分区删除后重建一个新的主分区D（貌似只能建立主分区），后来想想这里是我失败的第一步。</p>
+<blockquote>
+<p>这里一定要看：CentOS系统安装只能在主分区，如果你的剩余空间不是在主分区是无法安装的</p>
+</blockquote>
+<p><strong>算上system_drv、lenovo_recovery以及系统分区，主分区已经有四个了，而且即使使用分区助手将其中的主分区转换到<code>逻辑分区</code>好像也不可以。</strong></p>
+<blockquote>
+<p>后记：2013-11-23 有朋友对我上文的描述理解有误：主分区不是说要分出一个区，空闲空间其实也是一个分区(逻辑上)，它就是一个“主分区”，大家可以理解为它是“主分区”吧。我上文是没有将空闲区域再分区的哦，只是“尝试”能不能分成主分区，如果可以就代表你的空闲空间处于主分区上，才能在CentOS安装时使用自定义布局(这个模式下CentOS只认主分区)！我上文的情况是有3个主分区在磁盘中显示了，但暗中还有6m空闲空间处于主分区(分区助手查不出来)，把我的最后一个主分区占用了……所以大家不要轻信磁盘布局或者分区助手，亲自试一下才知道主分区还有没有足够空闲空间。</p>
+</blockquote>
+<p>安装好Win7系统后我在磁盘管理中将主分区D压缩了100多G的空间并使用分区助手擦除了数据。之后再使用分区助手创建了一个20多G的ext3格式的<code>逻辑分区</code>用于存放CentOS系统的安装文件，剩余80G左右的空间用于安装CentOS。由于主分区的数目最多有4个，因此我将主分区D和lenovo_recovery转换到<code>逻辑分区</code>后（<strong>将主分区D和lenovo_recovery都转换到<code>逻辑分区</code>后才能创建主分区，是否还存在其他主分区？</strong>），再将剩余80G左右的空间创建成ext3格式的主分区。接下来的步骤完全参照上述两篇文章。其中需要注意两点：一是使用Ext2Fsd更改装配点盘符后发现不是自己设置的盘符；二是neogrub配置文件中的实际分区编号并不一定是Ext2Fsd中看到的那个分区编号，在grub的时候就会出现“file not found”的提示，<strong>好像分区编号是按照先主分区后逻辑分区的顺序来分配的。</strong>如果出现“file not found”的提示你可以按e键进行编辑，总能弄对的。</p>
+<p>接下来进入安装界面，选择语言、键盘以及安装文件放在哪个分区，这些应该都不会有问题，直到安装到某一步时提示“The storage device below may contain data”并且有两个选择：一是“Yes,discard any data”；二是“No,keep any data”。如果选择第“No, keep any data”就会退出安装，但是选择“Yes,discard any data”又会格式化硬盘。到这里基本上就宣告双系统安装失败了，至于什么原因，我也说不出个所以然来，但是感觉还是分区出了问题。后来我又试了n种分区方式（不再一一介绍），都是安装到那一步就提示“The storage device below may contain data”。</p>
+<p>如果不是看到这篇文章：<a href="http://fyq891014.blog.163.com/blog/static/20074019120136163938790/" target="_blank" rel="external">Win7安装64位CentOS 6.4双系统详细过程</a>(文章的好坏不作评论)，我也许会纠结于无限的重新分区。当看到这篇文章中提到使用Pqmagic创建ext3格式的分区时，我在想是不是分区助手创建的ext3格式的分区有问题，，因此我决定使用Pqmagic创建ext3格式的分区，但是就在使用Pqmagic删除之前使用分区助手创建的ext3格式的分区时，电脑突然蓝屏了，关机再重启依然不行，再使用u盘重新安装Win7系统也不行，不显示任何硬盘分区，我想这下糟糕了。</p>
+<p>后来想想如果不是这样，也许双系统的安装就不会成功，或许真是应了“祸兮福之所倚,福兮祸之所伏”这句话。</p>
+<h2 id="成功安装">成功安装</h2>
+<p>1.<br><strong>写在前面。我想申明一点：这篇文章的真正目的并不是指导大家如何安装双系统，我也就是一个小白，很多东西都是似懂非懂，所以整的系统都启动不了，其实就是想记录下安装过程供以后参考。此外使用联想T420以及其他型号笔记本的筒子们如果想参考这篇文章安装双系统也请慎重，一切后果自负。</strong></p>
+<p>2.<br>上文讲到使用Pqmagic删除分区时遭遇蓝屏并且导致系统启动不了。出现问题后我立即上网搜了一下，毫无头绪，这时已经快0点了，头脑昏昏沉沉，我就在想不会要去找售后吧？其中看到一些帖子讲到使用pe恢复系统以及硬盘分区，我想再试一下吧，果断<a href="http://www.laomaotao.net/" target="_blank" rel="external">老毛桃</a>,下载老毛桃U盘启动制作工具 Win8 PE完美贡献装机版，如何制作，老毛桃官网有教程。</p>
+<p>3.<br>啰嗦了半天，现在才进入正题，下面的每一步操作我都会尽量截图，如果有不对的地方欢迎交流。</p>
+<p>(1)、首先进入bios，设置启动顺序，按F10保存并退出。<br><img src="http://sung-linux.qiniudn.com/IMG_0216.JPG" alt=""></p>
+<p>(2)、系统启动后，进入老毛桃U盘启动制作工具界面，选择“运行最新版Disk Genius分区工具”。<br><img src="http://sung-linux.qiniudn.com/IMG_0218.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0219.JPG" alt=""></p>
+<p>(3)、按提示输入“D”后，进入Disk Genius的DOS版。<br><img src="http://sung-linux.qiniudn.com/IMG_0223.JPG" alt=""></p>
+<p>(4)、<strong>因为我的系统已经启动不了，并且进入Disk Genius的DOS版时提示一些错误，如扩展分区终止位置参数溢出等，好像也修复不了，所以我索性将所有分区都删除掉重新建立。这里我只截取了删除主分区（3）的图。</strong><br><img src="http://sung-linux.qiniudn.com/IMG_0225.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0227.JPG" alt=""></p>
+<p>(5)、将所有分区都删除后，我使用Disk Genius重建主引导记录（MBR）。<br><img src="http://sung-linux.qiniudn.com/IMG_0231.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0234.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0236.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0238.JPG" alt=""></p>
+<p>(6)、建好MBR后，使用Disk Genius快速分区。<br><img src="http://sung-linux.qiniudn.com/IMG_0240.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0245.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0246.JPG" alt=""></p>
+<p>(7)、快速分区结束后，重新进入进入老毛桃U盘启动制作工具界面，选择“安装原版Win7/Win8系统（非GHOST版）”。<strong>在这之前将Win7系统的iso文件解压至u盘。</strong><br><img src="http://sung-linux.qiniudn.com/IMG_0248.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0250.JPG" alt=""></p>
+<p>(8)、下面就进入到安装Win7系统的界面，<strong>请留意分区的删除与新建以及设置bios硬盘启动</strong>。<br><img src="http://sung-linux.qiniudn.com/IMG_0252.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0260.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0261.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0263.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0265.JPG" alt=""></p>
+<p>选择自定义安装。<br><img src="http://sung-linux.qiniudn.com/IMG_0266.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0268.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0270.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0272.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0273.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0274.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0275.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0279.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0280.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0283.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0285.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0286.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0287.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0290.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0292.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0293.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0294.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0298.JPG" alt=""></p>
+<p>首次进入Win7系统后，双击D盘，会提示格式化。<br><img src="http://sung-linux.qiniudn.com/IMG_0299.JPG" alt=""></p>
+<p>查看磁盘管理情况。<br><img src="http://sung-linux.qiniudn.com/IMG_0321.JPG" alt=""></p>
+<p>(9)、至此Win7系统基本上安装完成，后续再安装下驱动即可。下面介绍linux系统的安装。参照大神的文章，先下载三个工具：EasyBCD、分区助手、Ext2Fsd。</p>
+<p>(10)、使用分区助手在未分配空间上新建一个ext3格式的逻辑分区，用于存放linux系统的安装文件。<br><img src="http://sung-linux.qiniudn.com/IMG_0323.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0326.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0328.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0329.JPG" alt=""></p>
+<p>(11)、建立好ext3格式的逻辑分区后，需要使用Ext2Fsd进行挂载。<br><img src="http://sung-linux.qiniudn.com/IMG_0331.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0332.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0334.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0338.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0339.JPG" alt=""></p>
+<p>挂载后，进入分区助手，点击刷新按钮。<br><img src="http://sung-linux.qiniudn.com/IMG_0341.JPG" alt=""></p>
+<p>(12)、使用EasyBCD添加修改启动项。<br><img src="http://sung-linux.qiniudn.com/IMG_0342.JPG" alt=""></p>
+<p>点击“添加新条目”，切换到“NeoGrub”选择卡，点击“安装”。<br><img src="http://sung-linux.qiniudn.com/IMG_0344.JPG" alt=""></p>
+<p>点击“配置”。<br><img src="http://sung-linux.qiniudn.com/IMG_0345.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0347.JPG" alt=""></p>
+<p>ctrl+s，进行保存。<br><img src="http://sung-linux.qiniudn.com/IMG_0351.JPG" alt=""></p>
+<p>(13)、将CentOS-6.4-x86_64-bin-DVD1.iso中的images和isolinux文件夹解压至新建的ext3格式的逻辑分区（在我电脑中挂载后是F盘），并将CentOS-6.4-x86_64-bin-DVD1.iso和CentOS-6.4-x86_64-bin-DVD2.iso这两个iso文件也拷贝过去。<br><img src="http://sung-linux.qiniudn.com/IMG_0348.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0349.JPG" alt=""></p>
+<p>lost+found文件夹是建立ext3格式的分区时，自动生成的。<br><img src="http://sung-linux.qiniudn.com/IMG_0352.JPG" alt=""></p>
+<p>(14)、重启电脑后，会有两个引导项，选择NeoGrub引导加载器，再选择CentOS，就会进入CentOS系统的安装。<br><img src="http://sung-linux.qiniudn.com/IMG_0354.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0357.JPG" alt=""></p>
+<p>选择语言。<br><img src="http://sung-linux.qiniudn.com/IMG_0368.JPG" alt=""></p>
+<p>选择键盘。<br><img src="http://sung-linux.qiniudn.com/IMG_0369.JPG" alt=""></p>
+<p>选择安装文件在哪个分区。<br><img src="http://sung-linux.qiniudn.com/IMG_0371.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0372.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0373.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0375.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0378.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0380.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0381.JPG" alt=""></p>
+<p>提示密码简单，选择“Use Anyway”即可。<br><img src="http://sung-linux.qiniudn.com/IMG_0382.JPG" alt=""></p>
+<p>选择自定义。<br><img src="http://sung-linux.qiniudn.com/IMG_0383.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0385.JPG" alt=""></p>
+<p>选择未分配空间，点击“Create”。<br><img src="http://sung-linux.qiniudn.com/IMG_0387.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0388.JPG" alt=""></p>
+<p>创建“/”目录。<br><img src="http://sung-linux.qiniudn.com/IMG_0391.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0393.JPG" alt=""></p>
+<p>点击“Next”，会提示没有创建swap分区，点击“Yes”。<br><img src="http://sung-linux.qiniudn.com/IMG_0394.JPG" alt=""></p>
+<p>选择“Write changes to disk”。<br><img src="http://sung-linux.qiniudn.com/IMG_0397.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0400.JPG" alt=""></p>
+<p>点击“Change device”。<br><img src="http://sung-linux.qiniudn.com/IMG_0402.JPG" alt=""></p>
+<p>点击“OK”。<br><img src="http://sung-linux.qiniudn.com/IMG_0404.JPG" alt=""></p>
+<p>选择安装方式。<br><img src="http://sung-linux.qiniudn.com/IMG_0406.JPG" alt=""></p>
+<p>看到这个画面，说明已经安装成功。<br><img src="http://sung-linux.qiniudn.com/IMG_0412.JPG" alt=""></p>
+<p>(15)、进入Win7系统，使用EasyBCD重新配置启动项。<br>点击“删除”按钮。<br><img src="http://sung-linux.qiniudn.com/IMG_0421.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0422.JPG" alt=""></p>
+<p>切换到“Linux/BSD”选项卡，如图设置，注意驱动器的选择，应该选择安装CentOS系统时创建的分区，设置好后，点击“添加条目”按钮。<br><img src="http://sung-linux.qiniudn.com/IMG_0424.JPG" alt=""></p>
+<p>再重启后，引导项如图。<br><img src="http://sung-linux.qiniudn.com/IMG_0425.JPG" alt=""></p>
+<p>(16)、至此Win7+linux的双系统安装完毕，使用分区助手和磁盘管理分别看下目前的分区情况。<br><img src="http://sung-linux.qiniudn.com/IMG_0413.JPG" alt=""></p>
+<p><img src="http://sung-linux.qiniudn.com/IMG_0420.JPG" alt=""></p>
+<h2 id="后记">后记</h2>
+<p>再次感谢大神Mr.Johness和老毛桃制作工具，如有任何问题，欢迎交流。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2014-08-24T02:55:44.000Z"><a href="/2014/08/24/hello-world/">Aug 24 2014</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2014/08/24/hello-world/">Hello World</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>Welcome to <a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="http://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="http://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">trobuleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
+<h2 id="Quick_Start">Quick Start</h2>
+<h3 id="Create_a_new_post">Create a new post</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
+
+<p>More info: <a href="http://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
+<h3 id="Run_server">Run server</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
+
+<p>More info: <a href="http://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
+<h3 id="Generate_static_files">Generate static files</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
+
+<p>More info: <a href="http://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
+<h3 id="Deploy_to_remote_sites">Deploy to remote sites</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
+
+<p>More info: <a href="http://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+  
+
+  <nav id="pagination">
+  
+  
+  <div class="clearfix"></div>
+</nav>
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="Search">
+    <input type="hidden" name="q" value="site:yoursite.com">
+  </form>
+</div>
+
+  
+
+  
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2014 sungang
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+</body>
+</html>
