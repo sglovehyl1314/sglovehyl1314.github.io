@@ -18,22 +18,33 @@
     <meta property="og:image" content="undefined"/>
   
 
-  <link href="/favicon.png" rel="icon">
+  <link href="/favicon.ico" rel="icon">
   <link rel="alternate" href="/atom.xml" title="Ox Patient" type="application/atom+xml">
-  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" type="text/css">
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" type="text/css">
+<link rel="stylesheet" href="/css/style.css" type="text/css">
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
   <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
   
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-368771XX-X']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
 
 </head>
 
-
 <body>
-  <header id="header" class="inner"><div class="alignleft">
-  <h1><a href="/">Ox Patient</a></h1>
-  <h2><a href="/"></a></h2>
-</div>
-<nav id="main-nav" class="alignright">
-  <ul>
+  <header id="header" class='normal_mode'>
+    <nav id="main-nav">
+  <ul class='container'>
     
       <li><a href="/">Home</a></li>
     
@@ -42,157 +53,126 @@
   </ul>
   <div class="clearfix"></div>
 </nav>
-<div class="clearfix"></div></header>
-  <div id="content" class="inner">
-    <div id="main-col" class="alignleft"><div id="wrapper">
-<h2 class="archive-title">2014/8</h2>
+  </header>
+  <div id="content" class="container">
+    
+<h2 class="archive-title"><i class="fa fa-archive"></i>2014/8</h2>
 
 
-  
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2014-08-24T07:32:44.000Z"><a href="/2014/08/24/windows 7 install linux/">Aug 24 2014</a></time>
-      
-      
-  
-    <h1 class="title"><a href="/2014/08/24/windows 7 install linux/">Win7(64bit)下安装CentOS-6.4(64bit)，有图有真相</a></h1>
-  
-
-    </header>
-    <div class="entry">
-      
-        <h2 id="背景介绍">背景介绍</h2>
-<p>出于某种原因，需要在Win7下安装linux系统。但是之前从未装过双系统，因此首先上网查阅相关资料，翻阅无数，直到看到大神Mr.Johness的两篇文章：<a href="http://www.cnblogs.com/Johness/p/3389376.html" target="_blank" rel="external">适用于CentOS6.4的Win7双系统安装方式</a>和<a href="http://www.cnblogs.com/Johness/archive/2012/12/03/2800126.html" target="_blank" rel="external">最清晰细致的教程！一步一步教你打造Win7+CentOS双系统</a>，真是无比感谢！</p>
-<p>看过这两篇文章之后，我开始了双系统安装的“旅程”。我使用的笔记本是联想T420，之前预装过Win7旗舰版(64bit)，但是一直是我老婆在用，总之一个字：乱，因此索性一起重装了。</p>
-<h2 id="失败经历">失败经历</h2>
-<p>首先重装Win7系统，Win7系统的安装要简单的多，网上有很多如何安装Win7系统的帖子，基本上照做就可以了。因为身边刚好有个15G左右的u盘，于是就使用u盘进行安装了，在磁盘管理里将u盘标记为活动分区，然后将下载好的iso解压至u盘，再在bios中设置usb启动，差不多就可以进行安装了。安装Win7系统的时候我将硬盘进行了重新分区，原有的system_drv、lenovo_recovery以及系统分区我没有删除，而是将其他分区删除后重建一个新的主分区D（貌似只能建立主分区），后来想想这里是我失败的第一步。</p>
-<blockquote>
-
-<p>“CentOS系统安装只能在主分区，如果你的剩余空间不是在主分区是无法安装的。”</p>
-<p>后记：2013-11-23 有朋友对我上文的描述理解有误：主分区不是说要分出一个区，空闲空间其实也是一个分区(逻辑上)，它就是一个“主分区”，大家可以理解为它是“主分区”吧。我上文是没有将空闲区域再分区的哦，只是“尝试”能不能分成主分区，如果可以就代表你的空闲空间处于主分区上，<br>才能在CentOS安装时使用自定义布局(这个模式下CentOS只认主分区)！<br>我上文的情况是有3个主分区在磁盘中显示了，<br>但暗中还有6m空闲空间处于主分区(分区助手查不出来)，把我的最后一个主分区占用了……所以大家不要轻信磁盘布局或者分区助手，亲自试一下才知道主分区还有没有足够空闲空间。</p>
-</blockquote>
+    <div class="archive">
+	<article class="post"
+		<header>
+		  <time datetime="2014-08-24T07:32:44.000Z"><a href="/2014/08/24/windows 7 install linux/">Aug 24 2014</a></time>
+		  <h1 class="title"><a href="/2014/08/24/windows 7 install linux/">Win7(64bit)下安装CentOS-6.4(64bit)，有图有真相</a></h1>
+		  
 
 
-<p><strong>算上system_drv、lenovo_recovery以及系统分区，主分区已经有四个了，而且即使使用分区助手将其中的主分区转换到<code>逻辑分区</code>好像也不可以。</strong></p>
-<p>安装好Win7系统后我在磁盘管理中将主分区D压缩了100多G的空间并使用分区助手擦除了数据。之后再使用分区助手创建了一个20多G的ext3格式的<code>逻辑分区</code>用于存放CentOS系统的安装文件，剩余80G左右的空间用于安装CentOS。由于主分区的数目最多有4个，因此我将主分区D和lenovo_recovery转换到<code>逻辑分区</code>后（<strong>将主分区D和lenovo_recovery都转换到<code>逻辑分区</code>后才能创建主分区，是否还存在其他主分区？</strong>），再将剩余80G左右的空间创建成ext3格式的主分区。接下来的步骤完全参照上述两篇文章。其中需要注意两点：一是使用Ext2Fsd更改装配点盘符后发现不是自己设置的盘符；二是neogrub配置文件中的实际分区编号并不一定是Ext2Fsd中看到的那个分区编号，在grub的时候就会出现“file not found”的提示，<strong>好像分区编号是按照先主分区后逻辑分区的顺序来分配的。</strong>如果出现“file not found”的提示你可以按e键进行编辑，总能弄对的。</p>
-<p>接下来进入安装界面，选择语言、键盘以及安装文件放在哪个分区，这些应该都不会有问题，直到安装到某一步时提示“The storage device below may contain data”并且有两个选择：一是“Yes,discard any data”；二是“No,keep any data”。如果选择第“No, keep any data”就会退出安装，但是选择“Yes,discard any data”又会格式化硬盘。到这里基本上就宣告双系统安装失败了，至于什么原因，我也说不出个所以然来，但是感觉还是分区出了问题。后来我又试了n种分区方式（不再一一介绍），都是安装到那一步就提示“The storage device below may contain data”。</p>
-<p>如果不是看到这篇文章：<a href="http://fyq891014.blog.163.com/blog/static/20074019120136163938790/" target="_blank" rel="external">Win7安装64位CentOS 6.4双系统详细过程</a>(文章的好坏不作评论)，我也许会纠结于无限的重新分区。当看到这篇文章中提到使用Pqmagic创建ext3格式的分区时，我在想是不是分区助手创建的ext3格式的分区有问题，，因此我决定使用Pqmagic创建ext3格式的分区，但是就在使用Pqmagic删除之前使用分区助手创建的ext3格式的分区时，电脑突然蓝屏了，关机再重启依然不行，再使用u盘重新安装Win7系统也不行，不显示任何硬盘分区，我想这下糟糕了。</p>
-<p>后来想想如果不是这样，也许双系统的安装就不会成功，或许真是应了“祸兮福之所倚,福兮祸之所伏”这句话。</p>
-
-      
+		</header>
+	</article>
     </div>
-    <footer>
-      
-        
-          <div class="alignleft">
-            <a href="/2014/08/24/windows 7 install linux/#more" class="more-link">Read More</a>
-          </div>
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
+
+    <div class="archive">
+	<article class="post"
+		<header>
+		  <time datetime="2014-08-24T02:55:44.000Z"><a href="/2014/08/24/hello-world/">Aug 24 2014</a></time>
+		  <h1 class="title"><a href="/2014/08/24/hello-world/">Hello World</a></h1>
+		  
 
 
-
-  
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2014-08-24T02:55:44.000Z"><a href="/2014/08/24/hello-world/">Aug 24 2014</a></time>
-      
-      
-  
-    <h1 class="title"><a href="/2014/08/24/hello-world/">Hello World</a></h1>
-  
-
-    </header>
-    <div class="entry">
-      
-        <p>Welcome to <a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="http://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="http://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">trobuleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick_Start">Quick Start</h2>
-<h3 id="Create_a_new_post">Create a new post</h3>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
-
-<p>More info: <a href="http://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run_server">Run server</h3>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
-
-<p>More info: <a href="http://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate_static_files">Generate static files</h3>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
-
-<p>More info: <a href="http://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy_to_remote_sites">Deploy to remote sites</h3>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
-
-<p>More info: <a href="http://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-
-      
+		</header>
+	</article>
     </div>
-    <footer>
-      
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
 
-
-
-  
-
-  <nav id="pagination">
+<nav id="pagination">
   
   
   <div class="clearfix"></div>
 </nav>
-</div></div>
-    <aside id="sidebar" class="alignright">
-  <div class="search">
-  <form action="//google.com/search" method="get" accept-charset="utf-8">
-    <input type="search" name="q" results="0" placeholder="Search">
-    <input type="hidden" name="q" value="site:yoursite.com">
-  </form>
-</div>
 
-  
-
-  
-</aside>
     <div class="clearfix"></div>
   </div>
-  <footer id="footer" class="inner"><div class="alignleft">
+  <footer id="footer" class="inner"><div>
   
   &copy; 2014 sungang
   
 </div>
+Powered by <a href="http://zespia.tw/hexo/" title="Hexo" target="_blank" rel="external">Hexo</a> and <a href="http://pages.github.com/" title="GitHub Pages" target="_blank" rel="external">GitHub Pages</a>
+
 <div class="clearfix"></div></footer>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-<script src="/js/jquery.imagesloaded.min.js"></script>
-<script src="/js/gallery.js"></script>
+  
+<script src="/js/jquery.imagesloaded.min.js" type="text/javascript"></script>
+<script src="/js/gallery.js" type="text/javascript"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js" type="text/javascript"></script>
 
 
 
 
-<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
-<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+    <script type="text/javascript">
+        (function(){
+
+            $(window).scroll(function(){
+
+                var scrollTop = $(window).scrollTop();
+                if ( scrollTop >200 ){
+                    $("#main-nav").removeClass('normal_mode').addClass('top_mode');
+                } else{
+                    $("#main-nav").removeClass('top_mode').addClass('normal_mode');
+                }
+
+            });
+
+        })();
+    </script>
+
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript">
+  (function($){
+    $('.fancybox').fancybox({
+      'titlePosition': 'inside'
+    });
+  })(jQuery);
+  </script>
+
+
+
+    
+    <script type="text/javascript">
+      var duoshuoQuery = {short_name:"your_id"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.src = 'http://static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0] 
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+
+
 <script type="text/javascript">
-(function($){
-  $('.fancybox').fancybox();
-})(jQuery);
+  
+  $(function(){
+
+    $('.title').hover(
+      function() {      
+        $(this).stop().animate(
+          {'marginLeft': '10px'}, 200
+        );   
+      }, 
+      function() {       
+        $(this).stop().animate({'marginLeft': '0px'}, 200);      
+      
+    });   
+
+  });
+
 </script>
+
 
 </body>
 </html>
