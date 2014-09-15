@@ -90,7 +90,7 @@
 <h2 id="list">list</h2>
 <p>学习过java，对list应该不会陌生，但是和java里的list肯定不一样（废话）。</p>
 <p>1、list是一种有序的集合，可以随时添加和删除元素。e.g. <code>colors = [&#39;red&#39;,&#39;black&#39;,&#39;yellow&#39;]</code>就是一个list。</p>
-<p>2、list里面的元素的类型可以不同，还可以包含另一个list，e.g.<br><code>language = [&#39;English&#39;,&#39;German&#39;,[&#39;Putonghua&#39;,&#39;Cantonese&#39;],&#39;Korean&#39;]</code>，<br>如果要获的元素<code>&#39;Putonghua&#39;</code>，可以使用<code>language[2][0]</code>。</p>
+<p>2、list里面的元素的类型可以不同，还可以包含另一个list，e.g.<code>language = [&#39;English&#39;,&#39;German&#39;,[&#39;Putonghua&#39;,&#39;Cantonese&#39;],&#39;Korean&#39;]</code>，如果要获的元素<code>&#39;Putonghua&#39;</code>，可以使用<code>language[2][0]</code>。</p>
 <p>3、支持两种索引方式：如果从第一个元素开始，那么索引就为0；如果从最后一个元素开始，那么索引就为-1。因此<code>colors[0]</code>和<code>colors[-3]</code>都表示<code>red</code>这个元素，但是都要确保索引不要越界，否则报错。</p>
 <p>4、<code>len()</code>函数可以获得list元素的个数，空list的长度为0。</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="input"><span class="prompt">&gt;&gt;&gt;</span> <span class="constant">L</span> = []</span></div><div class="line"><span class="input"><span class="prompt">&gt;&gt;&gt;</span> len(<span class="constant">L</span>)</span></div><div class="line"><span class="number">0</span></div></pre></td></tr></table></figure>
@@ -135,6 +135,7 @@
 <li>使用in判断key是否存在。</li>
 </ul>
 <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="input"><span class="prompt">&gt;&gt;&gt;</span> <span class="string">'hewu'</span> in d</span></div><div class="line"><span class="input"><span class="prompt">False</span></span></div><div class="line">&gt;&gt;&gt; <span class="string">'zhangsan'</span> in d</div><div class="line"><span class="constant">True</span></div></pre></td></tr></table></figure>
+
 
 
 <ul>
