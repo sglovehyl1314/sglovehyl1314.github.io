@@ -6,8 +6,6 @@
   <title>Ox Patient</title>
   <meta name="author" content="sungang">
   
-  <meta name="description" content="Like Programmer Like ape">
-  
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -69,7 +67,7 @@
   
  
  <li>
-   	<a href="mailto:83195832@qq.com" class="email" target="_blank" title="Email Me">
+   	<a href="mailto:oxpatient@gmail.com" class="email" target="_blank" title="Email Me">
   		<i class="fa fa-envelope"></i>
   	</a>
  </li>
@@ -77,6 +75,79 @@
 </ul>
 	</div>
 </div>
+
+
+  <article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
+  <div class="post-content">
+    <header>
+      
+      <time datetime="2014-11-28T05:58:38.000Z"><a href="/2014/11/28/extjs3-note-1/">Fri, Nov 28 2014, 1:58:38 pm</a></time>
+
+  
+    <h1 class="title"><a href="/2014/11/28/extjs3-note-1/">ExtJS3杂记（一）</a></h1>
+  
+
+
+  
+  <div class="categories">
+  	<i class="fa fa-folder-open"></i>
+    <a href="/categories/extjs/">extjs</a>
+  </div>
+
+
+<div class="clear"></div>
+      
+    </header>
+    <div class="entry">
+      
+        <p>1、需要注意区分Radio的check事件和change事件，引用api的解释如下。<br>check事件：当checkbox选中也好，不选中也好，触发该事件；<br>change事件：当元素失去焦点时，如果值被修改则触发此事件。</p>
+<p>2、使用FieldSet时，其items项中尽量不要使用FormPanel；如果想使用form布局，可以使用Panel且设置layout为’form’。</p>
+<p>3、GridPanel在region不是’center’的情况下且又没有指定高度时，显示会有问题。</p>
+<p>4、layout主要包括absolute、accordion、anchor、border、card、column、fit、form以及table，经常使用的有border、card、column、fit以及form，正是通过layout之间的组合，然后渲染出所需要的页面。此外，虽然ExtJS3也支持vbox和hbox的布局，但是有很多限制，显然没有在ExtJS4中那么好用。根据使用场景，总结几个经常使用的布局组合如下：</p>
+<ul>
+<li><p>使用场景：页面的查询条件面板，查询条件不多且能够横向占用panel一行的情况。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> panel = <span class="keyword">new</span> Ext.Panel({</div><div class="line">	border: <span class="literal">false</span>,</div><div class="line">	layout: <span class="string">'column'</span>,</div><div class="line">	items: [{</div><div class="line">		xtype: <span class="string">'form'</span>,</div><div class="line">		border: <span class="literal">false</span>,</div><div class="line">		defaults: {</div><div class="line">			anchor: <span class="string">'95%'</span></div><div class="line">		},</div><div class="line">		items: [],</div><div class="line">		columnWidth: <span class="number">.33</span></div><div class="line">	}, {</div><div class="line">		xtype: <span class="string">'form'</span>,</div><div class="line">		border: <span class="literal">false</span>,</div><div class="line">		defaults: {</div><div class="line">			anchor: <span class="string">'95%'</span></div><div class="line">		},</div><div class="line">		items: [],</div><div class="line">		columnWidth: <span class="number">.33</span></div><div class="line">	}, {</div><div class="line">		xtype: <span class="string">'form'</span>,</div><div class="line">		border: <span class="literal">false</span>,</div><div class="line">		defaults: {</div><div class="line">			anchor: <span class="string">'95%'</span></div><div class="line">		},</div><div class="line">		items: [],</div><div class="line">		columnWidth: <span class="number">.33</span></div><div class="line">	}]</div><div class="line">});									</div></pre></td></tr></table></figure>
+</li>
+<li><p>使用场景：页面的查询条件面板，查询条件很多且不能够横向占用panel一行的情况。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div></pre></td><td class="code"><pre><div class="line">var panel = new Ext.Panel({</div><div class="line">	border: false,</div><div class="line">	layout: 'form',</div><div class="line">	items: [{</div><div class="line">		border: false,</div><div class="line">		layout: 'column',</div><div class="line">		items: [{</div><div class="line">			xtype: 'form',</div><div class="line">			border: false,</div><div class="line">			defaults: {</div><div class="line">				anchor: '95%'</div><div class="line">			},</div><div class="line">			items: [],</div><div class="line">			columnWidth: .33</div><div class="line">		}, {</div><div class="line">			xtype: 'form',</div><div class="line">			border: false,</div><div class="line">			defaults: {</div><div class="line">				anchor: '95%'</div><div class="line">			},</div><div class="line">			items: [],</div><div class="line">			columnWidth: .33</div><div class="line">		}, {</div><div class="line">			xtype: 'form',</div><div class="line">			border: false,</div><div class="line">			defaults: {</div><div class="line">				anchor: '95%'</div><div class="line">			},</div><div class="line">			items: [],</div><div class="line">			columnWidth: .33</div><div class="line">		}]</div><div class="line">	}, {</div><div class="line">		border: false,</div><div class="line">		layout: 'column',</div><div class="line">		items: [{</div><div class="line">			xtype: 'form',</div><div class="line">			border: false,</div><div class="line">			defaults: {</div><div class="line">				anchor: '95%'</div><div class="line">			},</div><div class="line">			items: [],</div><div class="line">			columnWidth: .33</div><div class="line">		}, {</div><div class="line">			xtype: 'form',</div><div class="line">			border: false,</div><div class="line">			defaults: {</div><div class="line">				anchor: '95%'</div><div class="line">			},</div><div class="line">			items: [],</div><div class="line">			columnWidth: .33</div><div class="line">		}, {</div><div class="line">			xtype: 'form',</div><div class="line">			border: false,</div><div class="line">			defaults: {</div><div class="line">				anchor: '95%'</div><div class="line">			},</div><div class="line">			items: [],</div><div class="line">			columnWidth: .33</div><div class="line">		}]</div><div class="line">	}, {</div><div class="line">		...</div><div class="line">	}]</div><div class="line">});</div></pre></td></tr></table></figure></li>
+</ul>
+
+      
+    </div>
+    <footer>
+      
+        <div class="alignleft">
+            <a href="/2014/11/28/extjs3-note-1/#more" class="more-link"><i class="fa fa-chevron-right"></i>Read More</a>
+        </div>
+        
+        
+          <div class="alignright"> 
+            <a href="http://sglovehyl1314.github.io/2014/11/28/extjs3-note-1/#comment" class="comment-link">
+              <i class="fa fa-comments"></i><span class="ds-thread-count" data-thread-key="/2014/11/28/extjs3-note-1/">&nbsp;
+              </span>
+            </a>
+          </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
 
 
   <article class="post">
