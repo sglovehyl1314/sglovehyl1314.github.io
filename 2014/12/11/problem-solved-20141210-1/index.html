@@ -1,0 +1,239 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>一次跟踪linux服务器出现内存占用过高现象的经历 | Ox Patient</title>
+  <meta name="author" content="sungang">
+  
+  <meta name="description" content="某天早上，某现场工程人员突然打电话反映web服务器内存占用过高，当时我的第一反应就是web服务还能够提供访问吗？但是经过了解，得知跑在服务器上的web程序运行正常并且客户端访问web页面也正常，我想应该没什么大问题吧？但是该工程人员还是认为内存不应该这么高，并且认为是web程序（java开发）导致的内存占用过高。下面是现场提供的截图：">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="一次跟踪linux服务器出现内存占用过高现象的经历"/>
+  <meta property="og:site_name" content="Ox Patient"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Ox Patient" type="application/atom+xml">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" type="text/css">
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" type="text/css">
+<link rel="stylesheet" href="/css/style.css" type="text/css">
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+</head>
+
+<body>
+  <header id="header" class='normal_mode'>
+    <nav id="main-nav">
+  <ul class='container'>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+      <li><a href="/categories/extjs">Extjs</a></li>
+    
+      <li><a href="/categories/python">Python</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+  </header>
+  <div id="content" class="container">
+    <article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
+  <div class="post-content">
+    <header>
+      
+      <time datetime="2014-12-11T01:45:33.000Z"><a href="/2014/12/11/problem-solved-20141210-1/">Thu, Dec 11 2014, 9:45:33 am</a></time>
+
+  
+    <h1 class="title">一次跟踪linux服务器出现内存占用过高现象的经历</h1>
+  
+
+
+
+<div class="clear"></div>
+      
+    </header>
+    <div class="entry">
+      
+        <p>某天早上，某现场工程人员突然打电话反映web服务器内存占用过高，当时我的第一反应就是web服务还能够提供访问吗？但是经过了解，得知跑在服务器上的web程序运行正常并且客户端访问web页面也正常，我想应该没什么大问题吧？但是该工程人员还是认为内存不应该这么高，并且认为是web程序（java开发）导致的内存占用过高。下面是现场提供的截图：</p>
+<img src="/img/20141211/01.png">
+
+<img src="/img/20141211/02.png">
+
+<img src="/img/20141211/03.png"><br><a id="more"></a><br>从进程使用内存的情况来看，java进程只占到22%左右，并且JVM的参数-Xmx的值为3072M<br>理论上，java进程最大使用的内存也就3072M左右，因此可以认为内存占用过高并不是web程序导致的。<br><br>一般说内存占用过高，肯定会影响到系统的应用，但是web页面又能够正常访问。但是内存过高的现象如何解释呢，直到看到这篇文章<a href="http://blog.licess.com/linux-memory/" target="_blank" rel="external">正确理解Linux内存占用过高的问题</a>，摘录部分内容如下：<br><blockquote>
+
+<p>最近有个月经问题，老有人问为何开机后，还没有其他服务，mem就被用完了？是不是内存泄露？是否要重启服务？只能说不要看现象，要看本质才能找到问题的根源。<br>往往给出这样的结果，怀疑内存用了90%：<br>    Mem: 4146788k total, 3825536k used, 321252k free, 213488k buffers<br>    Swap: 2650684k total, 80k used, 2650604k free, 3006404k cached<br>这样怀疑很普遍，因为很多人用惯了Windows。Windows下，可以使用任务管理器查看当前进程对于内存的消耗情况。在我看来，Windows物理内存总是留下一定的空间，就算此时物理内存有空闲时，也会让某些程序去使用虚拟内存，目的是在Windows下启动新程序时，直接分配空闲的物理内存，这样子新程序启动速度就较快，而Linux则不然。<br>而在Linux下，使用top命令看到内存占用情况：<br>Mem: 4146788k total, 3825536k used, 321252k free, 213488k buffers<br>    Swap: 2650684k total, 80k used, 2650604k free, 3006404k cached<br>这里的结果显示使用了3.8G的used，占用率达到90%。看看free的结果你还可以对比一下：<br>    $ free -m<br>    total used free shared buffers cached<br>    Mem: 4049 3784 265 0 208 2939<br>    -/+ buffers/cache: 636 3413<br>    Swap: 2588 0 2588<br>虽然MEM显示了3.7G左右的used，但是（-/+ buffers/cache）减去buffers和cache的结果可以看到，当前进程实际占用内存是636M，而可用空闲（free）内存为3.4G。<br>可以这么理解：在linux的内存分配机制中，优先使用物理内存，当物理内存还有空闲时（还够用），不会释放其占用内存，就算占用内存的程序已经被关闭了，该程序所占用的内存用来做缓存使用，对于开启过的程序、或是读取刚存取过得数据会比较快。<br>如上面的例子：使用了4G的内存，3.7G被占用，但是buuffer和cached部分作为缓存，可以使用命中率的方式提高使用效率，而且这部分缓存是根据指令随时可以释放的，我们可以认为这部分内存没有实际被使用，也可以认为它是空闲的。<br>因此查看目前进程正在实际被使用的内存，是used-(buffers+cache)，也可以认为如果swap没有大量使用，mem还是够用的，只有mem被当前进程实际占用完（没有了buffers和cache），才会使用到swap的。</p>
+</blockquote>
+
+
+<p>后来我在其中一台出现内存占用过高现象的web服务器上使用free -m命令查看了一下，<br>确实和文章所讲到的类似，截图如下：</p>
+<img src="/img/20141211/04.png">
+      
+    </div>
+    <footer>
+      
+          
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+  <span class="jiathis_txt">分享到：</span>
+  <a class="jiathis_button_weixin">微信</a>
+  <a class="jiathis_button_tsina">新浪微博</a>
+  <a class="jiathis_button_renren">人人网</a>
+  <a class="jiathis_button_qzone">QQ空间</a>
+  <a class="jiathis_button_douban">豆瓣</a>
+  <a class="jiathis_button_pocket">Pocket</a>
+  <a href="http://www.jiathis.com/share?uid=901656" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js?uid=901656" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+          <div class="clearfix"></div>
+          <nav id="pagination">
+  
+  
+    <a href="/2014/11/28/extjs3-note-1/" class="alignright next">Prev<i class="fa fa-long-arrow-right"></i></a>
+  
+  <div class="clearfix"></div>
+</nav>
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">Comments</h1>
+
+  
+      <!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread" data-thread-key="/2014/12/11/problem-solved-20141210-1/"></div>
+<!-- Duoshuo Comment END -->
+<!-- Duoshuo Script BEGIN -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sglovehyl1314};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- Duoshuo Script END -->
+  
+</section>
+
+
+
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div>
+  
+  &copy; 2014 sungang
+  
+</div>
+Powered by <a href="http://zespia.tw/hexo/" title="Hexo" target="_blank" rel="external">Hexo</a> and <a href="http://pages.github.com/" title="GitHub Pages" target="_blank" rel="external">GitHub Pages</a>
+
+<div class="clearfix"></div></footer>
+  
+<script src="/js/jquery.imagesloaded.min.js" type="text/javascript"></script>
+<script src="/js/gallery.js" type="text/javascript"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js" type="text/javascript"></script>
+
+
+
+
+
+    <script type="text/javascript">
+        (function(){
+
+            $(window).scroll(function(){
+
+                var scrollTop = $(window).scrollTop();
+                if ( scrollTop >200 ){
+                    $("#main-nav").removeClass('normal_mode').addClass('top_mode');
+                } else{
+                    $("#main-nav").removeClass('top_mode').addClass('normal_mode');
+                }
+
+            });
+
+        })();
+    </script>
+
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript">
+  (function($){
+    $('.fancybox').fancybox({
+      'titlePosition': 'inside'
+    });
+  })(jQuery);
+  </script>
+
+
+
+    
+    <script type="text/javascript">
+      var duoshuoQuery = {short_name:"sglovehyl1314"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.src = 'http://static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0] 
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+
+
+<script type="text/javascript">
+  
+  $(function(){
+
+    $('.title').hover(
+      function() {      
+        $(this).stop().animate(
+          {'marginLeft': '10px'}, 200
+        );   
+      }, 
+      function() {       
+        $(this).stop().animate({'marginLeft': '0px'}, 200);      
+      
+    });   
+
+  });
+
+</script>
+
+
+</body>
+</html>
