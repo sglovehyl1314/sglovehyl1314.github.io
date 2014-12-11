@@ -1,0 +1,335 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>一次有关数据库连接问题的排查经历 | Ox Patient</title>
+  <meta name="author" content="sungang">
+  
+  <meta name="description" content="某天，某现场工程人员反映：有时访问页面失败并且页面提示“未识别的数据库错误”、“未知Action错误”等，查看web日志，发现一些异常信息：“java.sql.SQLException: Connection has been administratively destroyed. Reconnect.”、“java.sql.SQLException: Connection has already been closed.”……
+现场环境：os：linux开发语言：javaweb程序开发框架：SSH数据库：oracle 10g（双机集群）中间件：weblogic 10g部署方式：两台小型机（配置weblogic集群）+两台PC服务器，F5负载均衡">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="一次有关数据库连接问题的排查经历"/>
+  <meta property="og:site_name" content="Ox Patient"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Ox Patient" type="application/atom+xml">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" type="text/css">
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" type="text/css">
+<link rel="stylesheet" href="/css/style.css" type="text/css">
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+</head>
+
+<body>
+  <header id="header" class='normal_mode'>
+    <nav id="main-nav">
+  <ul class='container'>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+      <li><a href="/categories/extjs">Extjs</a></li>
+    
+      <li><a href="/categories/python">Python</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+  </header>
+  <div id="content" class="container">
+    <article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
+  <div class="post-content">
+    <header>
+      
+      <time datetime="2014-12-11T06:30:01.000Z"><a href="/2014/12/11/problem-solved-20141211-1/">Thu, Dec 11 2014, 2:30:01 pm</a></time>
+
+  
+    <h1 class="title">一次有关数据库连接问题的排查经历</h1>
+  
+
+
+
+<div class="clear"></div>
+      
+    </header>
+    <div class="entry">
+      
+        <p>某天，某现场工程人员反映：有时访问页面失败并且页面提示“未识别的数据库错误”、“未知Action错误”等，查看web日志，发现一些异常信息：“java.sql.SQLException: Connection has been administratively destroyed. Reconnect.”、“java.sql.SQLException: Connection has already been closed.”……</p>
+<p>现场环境：<br>os：linux<br>开发语言：java<br>web程序开发框架：SSH<br>数据库：oracle 10g（双机集群）<br>中间件：weblogic 10g<br>部署方式：两台小型机（配置weblogic集群）+两台PC服务器，F5负载均衡<br><a id="more"></a></p>
+<h2 id="跟踪排查">跟踪排查</h2>
+<p>1、根据web日志，首先想到的是：oracle数据库的最大进程连接数或最大会话连接数是不是超了。但是现场反馈：数据库集群的最大进程连接数为1000，最大会话连接数为1500；并且通过一段时间的监测，数据库集群的进程连接数和会话连接数基本在500左右，即使访问页面失败时，数据库集群的进程连接数和会话连接数也就在800左右。此外oracle数据库的IDLE_TIME也未作限制，因此基本上可以排除数据库这一因素。</p>
+<p>2、通过网上继续查找相关原因时，看到一篇帖子，引用其中一段：</p>
+<blockquote>
+
+<p>查了一下weblogic的API，原因是从连接池中获取connection后，该connection的ConnectionEnv的属性destroyed=true，不明白了，如果该connection被destroy了，怎么还能从连接池中获取到呢？</p>
+<footer><strong>http://bbs.csdn.net/topics/350192926</strong></footer></blockquote>
+
+<p>由此想到，会不会是Weblogic的数据库连接池中存在因某种原因而无效的数据库连接（connection），而使用该连接再去访问数据库就会失败呢？如果从这个思路出发，是否可以监测Weblogic的数据库连接池，查看是否存在无效的数据库连接？但是目前Weblogic数据库连接池的监控指标主要有：活动连接平均计数、当前活动连接计数、最大活动连接计数、连接延迟时间、连接总数、当前容量、最大当前容量计数、失败的保留请求计数、重新连接失败计数、最大可用数、泄漏连接计数、可用数、不可用数、保留请求计数、最大等待秒数、等待连接当前计数、等待连接失败总数、最大等待连接计数、等待连接成功总数以及等待连接总数等，并没有监控活动连接的有效与否。</p>
+<p>继续查找，另外一篇文章讲到：</p>
+<blockquote>
+
+<p>其实Weblogic服务器也没有办法知道当前数据库连接池中的connection是否有效，“因为在池中缓冲的那些“Connection”，有很多是刚刚被Client端释放，但是连接池本身来却没有去close它们，而是依然“维持”连接，以期等待后续其他Client的请求。但是就是这么一段可能并不长的时间，却有着很多潜在的危险：此时网络有一定的不稳定，池中原本与数据库保持连接的Connection，却因此而中断了通讯——但是此时连接池依然以为这个一个有效的Connection返回给了Client······结果大家可想而知。”</p>
+<footer><strong>http://soft.zdnet.com.cn/software_zone/2008/0319/775889.shtml</strong></footer></blockquote>
+
+<p>此外该篇文章也提到连接失效的原因有多种情况，可能比文中所描述的更复杂，同时也给出了解决方案：设置Weblogic数据库连接池的“续连接”和“回收”机制。但是该篇文章最后也提到：</p>
+<blockquote>
+
+<p>但是，在应用过程中，不代表所有的应用连接池部署都需要开启“续连接”或“回收”，这是因为，续连接回造成每次获取连接的时间会无形的增加，而“回收”操作则会比较占用资源，如果过于频繁，则影响了系统响应效率。所以，这两项连接池的服务，是否一定需要开启，则要根据应用特点来分别对待了。”。</p>
+</blockquote>
+
+
+<p>3、经过一番权衡，决定选择一台web服务器，配置Weblogic数据库连接池进行验证。结合这篇文章《通向架构师的道路（第八天）之weblogic与apache的整合与调优》，我对Weblogic数据库连接池进行了如下配置：<br>（1）初始容量可以考虑设置大点，比如30或50；<br>（2）最大容量的设置可以参照oracle数据库的最大进程连接数或是最大会话连接数，比如1000，但是不要超过1500；<br>（3）保留测试时连接：建议勾选；</p>
+<blockquote>
+
+<p>请把此项打上勾。我们的数据库连接池会不断的扫描我们的jdbc的连接使用情况，当发觉不用的jdbc连接时会“回收”掉它，因此你必须把这个选项的勾打上，要不然，weblogic的数据库连接池不会去扫描你的不用的连接或者长时间不活动的连接，此选项将有助于你系统的稳定性。比如说：有时我们碰到一些忘关的连接或者废弃的连接，那么weblogic将会自动为我们“回收”这些连接，以使得数据库连接池被充分利用。</p>
+</blockquote>
+
+<p>（4）测试频率：建议默认；</p>
+<blockquote>
+
+<p>这个值与上面的“保留时测试连接”是关联的，这个值默认为120秒，即2分钟，weblogic会产生一条探测语句“SQL SELECT 1 FROM DUAL”来探测你的oracle数据库中的连接，这个值绝对不能太小比如说：60秒，或者更有甚者设了个5秒，那么你的weblogic会不停的向oracle发送“SQL SELECT 1 FROM DUAL”语句，并且造成大量的inactive状态的数据库连接，最后甚至把你的oracle数据库给活活搞死，搞死搞死。。。。。。而且是“挺尸”就是数据库服务器动也动不了了，真的，不信你试试！一般在production环境上，如果相对稳定，可以把这个值，设大点，比如说：15分钟，或者20分钟探测一次。</p>
+</blockquote>
+
+<p>（5）测试表名称：默认；<br>（6）初始化 SQL：默认；<br>（7）信任空闲池连接的秒数：<strong>原来设置的值为10，为了保证连接的绝对有效，我将其设置为0；</strong></p>
+<blockquote>
+
+<p>在流量很大的时候执行数据库连接测试会降低应用程序性能。为了最大程度地减少连接测试的影响，可设置 JDBC 数据源配置中的“信任空闲缓冲池连接的秒数”特性，以便信任最近使用的或最近测试的数据库连接并跳过连接测试。<br>如果对数据源启用了“测试保留的连接”，则在某个应用程序请求一个数据库连接时，WebLogic Server 会在向该应用程序提供该数据库连接之前，测试该数据库连接。如果请求是在已为“信任空闲缓冲池连接的秒数”指定的时间内（自测试了连接或成功使用了连接并将其返回到数据源以来）做出的，则 WebLogic Server 会在将其传递到某个应用程序之前跳过连接测试。<br>如果您的数据源的“测试频率”大于 0（已启用定期测试），则 WebLogic Server 也会跳过连接测试（如果在为“信任空闲缓冲池连接的秒数”指定的时间内成功使用了该连接并将其返回到数据源”）。<br>“信任空闲缓冲池连接的秒数”是一种调整功能，通过该功能可以最大程度地减少数据库连接测试所导致的延迟（特别是在流量很大的时候），从而提高应用程序性能。不过，它会降低连接测试的效力，尤其是在将值设置得过高的时候。适当的值取决于环境及连接失效的可能性。</p>
+</blockquote>
+
+<p>（8）重试创建连接的频率：建议设置0；</p>
+<blockquote>
+
+<p>尝试建立数据库连接的间隔秒数。如果不设置此值，则在数据库不可用的情况下，创建数据源的操作将失败。如果已设置此值且在创建数据源时数据库不可用，则在您指定的秒数之后，WebLogic Server 将重新尝试在池中创建连接，并会不断尝试创建连接，直到创建<br>成功。如果设置为 0，则将禁用连接重试。</p>
+</blockquote>
+
+<p>（9）登录延迟：默认；</p>
+<blockquote>
+
+<p>创建每个物理数据库连接前的延迟秒数。此延迟支持不能快速连续处理多个连接请求的数据库服务器。在初始数据源创建及数据源生命周期内，每当创建物理数据库连接时都会有此延迟。我们保持它为0。</p>
+</blockquote>
+
+<p>（10）非活动连接超时：<strong>原来设置的值为1200，也就是20分钟，我觉得是不是太长了，从而导致无效的连接得不到及时“回收”，因此我将其改为150；</strong></p>
+<blockquote>
+
+<p>保留连接处于不活动状态的秒数，该秒数过后WebLogic Server 将收回该连接并将其释放<br>回连接池。可以使用“非活动连接超时”功能收回泄漏的连接-未由应用程序显式关闭的连接。请注意，不能使用此功能来代替正常关闭连接。如果设置为 0，则将禁用此功能。如果上面的“保留时测试连接”、“测试频率”，“测试表名称”没有设置或者是“保留时测试连接”没有勾选，那么这个选项是没有用处的，因为它就是我们上面提到的，Weblogic会自动为我们释放一个超时的连接，这个超时要和oracle数据库中的sql_time_out一致，比如说：60秒，我们回收一个超时了的inactive的连接。这个值的设定对我们数据库的稳定性和性能也有着很大的影响。</p>
+</blockquote>
+
+<p>（11）最大等待连接数：建议设置1000，不使用默认值；</p>
+<blockquote>
+
+<p>等待保留数据源的连接池中的连接时会阻塞线程的最大并发连接请求数。来看它的默认值“2147483647”，这边可千万不要用默认值啊，要不然你的数据库也一样会在出现阻塞或者是死锁时活活被搞死，搞死搞死。。。。。。而且是“挺尸”，为啥，一个阻塞了没事，这下好，一个阻塞了，然后它允许后面的连接继续进，进啊进啊进，你人又不可能天天时时分好盯着个oracle的监控端看着它，好了，进到2147483647个连接时，数据库不死了才怪呢。一般太平点的，给个合理的数量就可以了，比如说100或者是200，不要超过oracle数据库提供的最大max session数就可以了。</p>
+</blockquote>
+
+<p>（12）连接保留超时：建议设置0；</p>
+<blockquote>
+
+<p>保留连接池中的连接的调用超时之前经过的秒数。如果设置为 0，则调用永远不会超时。 如果设置为 -1，则调用会立即超时。（对数据库来说，这个值是最安全的，SQL语句一被调用就超时，然后经过上面的“非活动连接超时”后，会被weblogic的数据库连接池给回收。）</p>
+</blockquote>
+
+<p>（13）语句超时：默认；</p>
+<blockquote>
+
+<p>此时间后当前正在执行的语句将超时。StatementTimeout依赖于底层 JDBC 驱动程序支持 。WebLogic Server 使用 java.sql.Statement.setQueryTimeout() 方法将指定的时间传 递给 JDBC 驱动程序。如果 JDBC 驱动程序不支持此方法，可能会引发异常错误并导致忽 略超时值。<br>值为 -1 时禁用此功能。<br>值为 0 表示语句不会超时。<br>最小值：-1<br>最大值：2147483647</p>
+</blockquote>
+
+<p>注：下面三个选项保持默认选择，没有特殊应用时不需要设置。</p>
+<blockquote>
+
+<p>A、忽略正在使用的连接<br>即便仍在使用从池获取的连接，也能够将数据源关闭。<br>B、固定到线程<br>PinnedToThread 是一个能够改善性能的选项，它启用执行线程以保持已入池的数据库连接，即使在应用程序关闭逻辑连接之后。启用 PinnedToThread 后，WebLogicServer 将在应用程序首次使用某个执行线程保留连接时将连接池中的一个数据库连接固定到此线程。当应用程序使用完此连接并调用 connection.close() (此方法在其他情况下会将连接返回到连接池) 时，WebLogic Server 会将该连接保留给执行线程，而不会将其返回连接池。当此后某个应用程序使用相同的执行线程请求连接时，WebLogic Server 将提供此线程已保留的这个连接。使用 PinnedToThread，当多个线程尝试同时保留一个连接时，连接池上不会发生锁定冲突，对于试图在有限个数的数据库连接中保留同一个连接的线程，也没有冲突。<br>如果应用程序使用相同的执行线程同时保留连接池中的多个连接，WebLogic Server 将创建附加的数据库连接并同样将它们固定到此线程。<br>C、已启用删除受影响的连接<br>指定在应用程序使用底层供应商连接对象之后是否从连接池中删除连接。如果禁止删除已占用的连接，必须确保该数据库连接适合由其他应用程序重用。设置为真 (默认设置) 时，应用程序关闭逻辑连接后不会将物理连接返回给连接池。将关闭并重新创建此物理连接。设置为假时，应用程序关闭逻辑连接后，物理连接将返回到连接池并可由该应用程序或其他应用程序重用。</p>
+</blockquote>
+
+
+<p>然而按照上述配置运行一段时间后，发现并未起作用，访问页面有时还是报错，查看web日志，仍然有“数据库连接已经关闭”的异常信息。既然Weblogic数据连接池还是存在失效的数据库连接，我开始考虑是否使用其他开源的数据库连接池再试试，就在这个时候，…….</p>
+<h2 id="意外发现">意外发现</h2>
+<p>无意间，我发现每次只要出现页面访问失败的情况，在Weblogic控制台监控数据库连接池时，都会有泄漏连接计数。虽然不确定两者之间是否有关联，但是我打算跟踪一下。查看<br>weblogic服务日志，发现异常信息：“Forcibly releasing inactive connection …”，<br>而这恰恰就有可能会导致泄漏连接。</p>
+<blockquote>
+
+<p>This is one of the Best feature of WebLogic to forcibily releasing the Jdbc Connection Objects which  could cause Connection Leak…Many Application Servers doesn’t have this feature.</p>
+</blockquote>
+
+<p>继续查找资料，另外一些帖子中提到：</p>
+<blockquote>
+
+<p>Hi. What is your pool’s “inactive connection timeout” setting?  If it is a reasonable value,<br>then this message indicates that either:<br>    1 - the oracle.jbo product does have a bug where it can reserve a connection and subsequently not close it,<br>    or<br>    2 - there is some timing/blockage issue that is halting the progress of that application, so the connection is neither used nor closed for a long time.<br>    WebLogic cannot know whether the application has retained or lost it’s reference to the connection. If it was lost, then the connection was truly leaked, and this would be case 1.</p>
+</blockquote>
+
+
+<blockquote>
+
+<p>You have leaked a connection. Didn’t close it. It became inactive, but not in the pool. After some time WLS noticed the fact that connection is in fact inactive, i.e. leaked, and forcefully closed it, returning it to the pool.</p>
+</blockquote>
+
+<p>这个时候，我开始怀疑泄漏连接的产生可能是因为启用了数据库连接池的“回收”机制，也就是说设置了“非活动连接超时”的值，之前值为1200，我后来改为150，其实不管设置1200，还是设置150，都会在某一sql执行时间较长后，强制“回收”该连接，并且将其到放回到数据库连接池中，这时其他client使用该连接就会报“数据库连接已经关闭”的错误。</p>
+<p>于是果断将“非活动连接超时”的值置0，于是，你懂的。。。。。。</p>
+
+      
+    </div>
+    <footer>
+      
+          
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+  <span class="jiathis_txt">分享到：</span>
+  <a class="jiathis_button_weixin">微信</a>
+  <a class="jiathis_button_tsina">新浪微博</a>
+  <a class="jiathis_button_renren">人人网</a>
+  <a class="jiathis_button_qzone">QQ空间</a>
+  <a class="jiathis_button_douban">豆瓣</a>
+  <a class="jiathis_button_pocket">Pocket</a>
+  <a href="http://www.jiathis.com/share?uid=901656" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js?uid=901656" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+          <div class="clearfix"></div>
+          <nav id="pagination">
+  
+  
+    <a href="/2014/12/11/problem-solved-20141210-1/" class="alignright next">Prev<i class="fa fa-long-arrow-right"></i></a>
+  
+  <div class="clearfix"></div>
+</nav>
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">Comments</h1>
+
+  
+      <!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread" data-thread-key="/2014/12/11/problem-solved-20141211-1/"></div>
+<!-- Duoshuo Comment END -->
+<!-- Duoshuo Script BEGIN -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sglovehyl1314};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+<!-- Duoshuo Script END -->
+  
+</section>
+
+
+
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div>
+  
+  &copy; 2014 sungang
+  
+</div>
+Powered by <a href="http://zespia.tw/hexo/" title="Hexo" target="_blank" rel="external">Hexo</a> and <a href="http://pages.github.com/" title="GitHub Pages" target="_blank" rel="external">GitHub Pages</a>
+
+<div class="clearfix"></div></footer>
+  
+<script src="/js/jquery.imagesloaded.min.js" type="text/javascript"></script>
+<script src="/js/gallery.js" type="text/javascript"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js" type="text/javascript"></script>
+
+
+
+
+
+    <script type="text/javascript">
+        (function(){
+
+            $(window).scroll(function(){
+
+                var scrollTop = $(window).scrollTop();
+                if ( scrollTop >200 ){
+                    $("#main-nav").removeClass('normal_mode').addClass('top_mode');
+                } else{
+                    $("#main-nav").removeClass('top_mode').addClass('normal_mode');
+                }
+
+            });
+
+        })();
+    </script>
+
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript">
+  (function($){
+    $('.fancybox').fancybox({
+      'titlePosition': 'inside'
+    });
+  })(jQuery);
+  </script>
+
+
+
+    
+    <script type="text/javascript">
+      var duoshuoQuery = {short_name:"sglovehyl1314"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.src = 'http://static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0] 
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+
+
+<script type="text/javascript">
+  
+  $(function(){
+
+    $('.title').hover(
+      function() {      
+        $(this).stop().animate(
+          {'marginLeft': '10px'}, 200
+        );   
+      }, 
+      function() {       
+        $(this).stop().animate({'marginLeft': '0px'}, 200);      
+      
+    });   
+
+  });
+
+</script>
+
+
+</body>
+</html>
