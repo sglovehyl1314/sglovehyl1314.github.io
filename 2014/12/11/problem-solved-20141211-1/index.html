@@ -183,7 +183,7 @@
 <p>You have leaked a connection. Didn’t close it. It became inactive, but not in the pool. After some time WLS noticed the fact that connection is in fact inactive, i.e. leaked, and forcefully closed it, returning it to the pool.</p>
 </blockquote>
 
-<p>这个时候，我开始怀疑泄漏连接的产生可能是因为启用了数据库连接池的“回收”机制，也就是说设置了“非活动连接超时”的值，之前值为1200，我后来改为150，其实不管设置1200，还是设置150，都会在某一sql执行时间较长后，强制“回收”该连接，并且将其到放回到数据库连接池中，这时其他client使用该连接就会报“数据库连接已经关闭”的错误。</p>
+<p>这个时候，我开始怀疑泄漏连接的产生可能是因为启用了数据库连接池的“回收”机制，也就是说设置了“非活动连接超时”的值，之前的值为1200，我后来改为150，其实不管设置1200，还是设置150，都会在某一数据库连接的inactive时间超过“非活动连接超时”的值后，强制“回收”该连接，并且将其到放回到数据库连接池中，这时其他client使用该连接就会报“数据库连接已经关闭”的错误。</p>
 <p>于是果断将“非活动连接超时”的值置0，于是，你懂的。。。。。。</p>
 
       
