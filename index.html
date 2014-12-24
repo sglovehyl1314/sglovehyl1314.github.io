@@ -98,6 +98,155 @@
   <div class="post-content">
     <header>
       
+      <time datetime="2014-12-24T02:12:44.000Z"><a href="/2014/12/24/extjs3-note-2/">Wed, Dec 24 2014, 10:12:44 am</a></time>
+
+  
+    <h1 class="title"><a href="/2014/12/24/extjs3-note-2/">ExtJS3杂记（二）</a></h1>
+  
+
+
+  
+  <div class="categories">
+  	<i class="fa fa-folder-open"></i>
+    <a href="/categories/extjs/">extjs</a>
+  </div>
+
+
+<div class="clear"></div>
+      
+    </header>
+    <div class="entry">
+      
+        <ul>
+<li><p>js引用的两种写法<br>第一种写法：<br><script language="Javascript" src=""></script><br>第二种写法：<br><script type="text/javascript" src=""></script><br>这两种写法有区别吗？其实没多大区别，都表示src的代码是javascript，但是在W3C的HTML标准中不再推荐使用language这个属性。</p>
+</li>
+<li><p>使用Ext.Loader解决由于js异步加载而导致jsp页面有时打开失败的问题<br>开发环境：Win7、Eclipse、Tomcat、Firefox<br>ExtJS版本：3.1.1<br>现象：jsp页面有时打开会失败，Firefox下报错：”ReferenceError: xxx is not defined”，但是jsp页面中也引用了定义xxx的js文件。<br>原因：某些引用的js文件较大，加载慢，而其他js文件又使用了该js文件中定义的类型。</p>
+</li>
+</ul>
+<p>一般情况下，在jsp文件中按顺序引用所需要的js文件，不会有这样的问题，但是因为js文件是异步加载的，我们又不能完全回避该问题。要想完全解决该问题，最有效的办法就是控制js文件的加载顺序。如何控制js的加载顺序，这就需要用到Ext.Loader这个类。<br>在ExtJS3早期版本中还没有这个类，我是在ExtJS3.4中找到的这个类。<br>先来看下这个类的定义：<br>“Simple class to help load JavaScript files on demand<br>Available since: Ext JS 3.4.0”。<br>该类有三个方法，load、loadFileIndex以及onFileLoaded，这里主要介绍load方法，该方法的api定义如下：</p>
+<p><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="operator"><span class="keyword">load</span>( fileList, callback, scope, preserveOrder )</span></div><div class="line">Loads a given <span class="keyword">set</span> <span class="keyword">of</span> .js files. Calls the callback <span class="keyword">function</span> <span class="keyword">when</span> <span class="keyword">all</span> files have been loaded <span class="keyword">Set</span> preserveOrder <span class="keyword">to</span> <span class="literal">true</span> <span class="keyword">to</span> ensure non-parallel loading <span class="keyword">of</span> files <span class="keyword">if</span> <span class="keyword">load</span> <span class="keyword">order</span> <span class="keyword">is</span> important</div><div class="line"></div><div class="line">Available since: Ext JS <span class="number">3.4</span><span class="number">.0</span></div><div class="line"></div><div class="line">Parameters</div><div class="line">fileList : <span class="built_in">Array</span></div><div class="line"><span class="built_in">Array</span> <span class="keyword">of</span> <span class="keyword">all</span> files <span class="keyword">to</span> <span class="keyword">load</span></div><div class="line">callback : <span class="keyword">Function</span></div><div class="line">Callback <span class="keyword">to</span> <span class="keyword">call</span> <span class="keyword">after</span> <span class="keyword">all</span> files have been loaded</div><div class="line">scope : Object</div><div class="line">The scope <span class="keyword">to</span> <span class="keyword">call</span> the callback <span class="keyword">in</span></div><div class="line">preserveOrder : <span class="built_in">Boolean</span></div><div class="line"><span class="literal">True</span> <span class="keyword">to</span> make files <span class="keyword">load</span> <span class="keyword">in</span> <span class="built_in">serial</span>, one <span class="keyword">after</span> the other (defaults <span class="keyword">to</span> <span class="literal">false</span>)</div></pre></td></tr></table></figure><br>虽然该类是ExtJS3.4提供的，但是也可以在ExtJS3的其他低版本中使用。<br>如果还没看懂怎么用，那么可以参考这篇文章<a href="http://nneverwei.iteye.com/blog/866156" target="_blank" rel="external">Ext.Loader使用(js延迟加载)</a>。</p>
+<p>最后由该问题引入另外一个话题：引用的js放在页面head里还是body里，有区别吗？</p>
+
+      
+    </div>
+    <footer>
+      
+        <div class="alignleft">
+            <a href="/2014/12/24/extjs3-note-2/#more" class="more-link"><i class="fa fa-chevron-right"></i>Read More</a>
+        </div>
+        
+        
+          <div class="alignright"> 
+            <a href="http://sglovehyl1314.github.io/2014/12/24/extjs3-note-2/#comment" class="comment-link">
+              <i class="fa fa-comments"></i><span class="ds-thread-count" data-thread-key="/2014/12/24/extjs3-note-2/">&nbsp;
+              </span>
+            </a>
+          </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
+  <div class="post-content">
+    <header>
+      
+      <time datetime="2014-12-12T08:15:32.000Z"><a href="/2014/12/12/tools-description-1/">Fri, Dec 12 2014, 4:15:32 pm</a></time>
+
+  
+    <h1 class="title"><a href="/2014/12/12/tools-description-1/">工欲善其事，必先利其器（持续整理中......）</a></h1>
+  
+
+
+
+<div class="clear"></div>
+      
+    </header>
+    <div class="entry">
+      
+        <p>常用下载站点：</p>
+<ul>
+<li><a href="http://www.wsf1234.com/" target="_blank" rel="external">风刑软件站</a>：有时会有意外收获哦！</li>
+</ul>
+<p>一、比较工具</p>
+<ul>
+<li><a href="http://www.scootersoftware.com/download.php" target="_blank" rel="external">Beyond Compare</a><br>引用官方介绍：</li>
+</ul>
+<blockquote>
+
+<p>Intelligent Comparison<br>Compare files and folders using simple, powerful commands that focus on the differences you’re interested in and ignore those you’re not.  Merge changes, synchronize files, and generate reports.</p>
+</blockquote>
+
+<p>之前使用它比较代码，那时候还是Beyond Compare 2，不过好像不支持word文档的比较；后来下载了<a href="http://bbs.pcbeta.com/viewthread-1077731-1-1.html" target="_blank" rel="external">Beyond Compare 3</a>（带注册码），就可以进行word文档的比较，应该是内置了这个功能；现在已经有Beyond Compare 4了，不过没用过。<br>注：针对word文档的比较好像也有<a href="http://zhidao.baidu.com/link?url=CgB5Ad29rxBkB8-KI2bdZVTV349ISPhELbaycG8v9OEYoxA9qyPqJGO-hm59q665DaubG91zwVtg5KPT6Uygeq" target="_blank" rel="external">插件</a>的方式。</p>
+<p>二、代码管理工具</p>
+<ul>
+<li>git<br>如果不知道git，赶快baidu[google]下吧；如果想快速入门，推荐廖雪峰的<a href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000" target="_blank" rel="external">Git教程</a>。</li>
+</ul>
+<p>三、图片处理工具</p>
+<ul>
+<li><a href="http://www.neoimaging.cn/" target="_blank" rel="external">光影魔术手</a></li>
+</ul>
+
+      
+    </div>
+    <footer>
+      
+        <div class="alignleft">
+            <a href="/2014/12/12/tools-description-1/#more" class="more-link"><i class="fa fa-chevron-right"></i>Read More</a>
+        </div>
+        
+        
+          <div class="alignright"> 
+            <a href="http://sglovehyl1314.github.io/2014/12/12/tools-description-1/#comment" class="comment-link">
+              <i class="fa fa-comments"></i><span class="ds-thread-count" data-thread-key="/2014/12/12/tools-description-1/">&nbsp;
+              </span>
+            </a>
+          </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
+  <div class="post-content">
+    <header>
+      
       <time datetime="2014-12-12T07:13:11.000Z"><a href="/2014/12/12/problem-solved-20141212-1/">Fri, Dec 12 2014, 3:13:11 pm</a></time>
 
   
@@ -438,7 +587,7 @@
     <div class="entry">
       
         <h1 id="前言">前言</h1>
-<p>在学习<a href="http://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a000" target="_blank" rel="external">廖雪峰的PYTHON教程</a>的过程中，备忘一些需要注意的知识点，特别感谢作者能够提供这么好的教程！此外推荐另外一篇关于<a href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000" target="_blank" rel="external">GIT的教程</a>，写的也相当不错。</p>
+<p>在学习<a href="http://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a000" target="_blank" rel="external">廖雪峰的PYTHON教程</a>的过程中，备忘一些需要注意的知识点，特别感谢作者能够提供这么好的教程！此外推荐其关于<a href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000" target="_blank" rel="external">GIT的教程</a>，写的也相当不错。</p>
 
       
     </div>
