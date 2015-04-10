@@ -13,7 +13,7 @@
 第二种写法：
 1&amp;lt;script type=&quot;text/javascript&quot; src=&quot;&quot;&amp;gt;&amp;lt;/script&amp;gt;
 
-这两种">
+这两种写法有区别吗，其实没多大区别，都表示src的代码是javascript。因为早期的浏览器的&amp;lt;script&amp;gt;标签不支持type属性，所以使用language属性，但是在W3C的HTML标准中不再推荐使用language这个属性。">
   
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -98,7 +98,7 @@
 <p>第二种写法：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span> <span class="attribute">src</span>=<span class="value">""</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span></div></pre></td></tr></table></figure>
 
-<p>这两种写法有区别吗，其实没多大区别，都表示src的代码是javascript。<br>因为早期的浏览器的<code>&lt;script&gt;</code>标签不支持type属性，所以使用language属性，<br>但是在W3C的HTML标准中不再推荐使用language这个属性。</p>
+<p>这两种写法有区别吗，其实没多大区别，都表示src的代码是javascript。<br>因为早期的浏览器的<code>&lt;script&gt;</code>标签不支持type属性，所以使用language属性，<br>但是在W3C的HTML标准中不再推荐使用language这个属性。<br><a id="more"></a></p>
 <ul>
 <li>使用Ext.Loader解决由于js异步加载而导致jsp页面有时打开失败的问题<br>开发环境：Win7、Eclipse、Tomcat、Firefox<br>ExtJS版本：3.1.1<br>现象：jsp页面有时打开会失败，Firefox下报错：”ReferenceError: xxx is not defined”，但是jsp页面中也引用了定义xxx的js文件。<br>原因：某些引用的js文件较大，加载慢，而其他js文件又使用了该js文件中定义的类型。</li>
 </ul>
