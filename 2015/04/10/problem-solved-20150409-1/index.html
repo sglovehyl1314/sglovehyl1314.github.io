@@ -3,15 +3,16 @@
 <head>
   <meta charset="utf-8">
   
-  <title>一次跟踪linux服务器出现内存占用过高现象的经历 | Ox Patient</title>
+  <title>Struts2序列化Action结果时的一个“坑” | Ox Patient</title>
   <meta name="author" content="sungang">
   
-  <meta name="description" content="某天早上，某现场工程人员突然打电话反映web服务器内存占用过高，当时我的第一反应就是web服务还能够提供访问吗？但是经过了解，得知跑在服务器上的web程序运行正常并且客户端访问web页面也正常，我想应该没什么大问题吧？但是该工程人员还是认为内存不应该这么高，并且认为是web程序（java开发）导致的内存占用过高。下面是现场提供的截图：">
+  <meta name="description" content="背景介绍
+某天，在本地环境修改日志查询页面时，发现某一下拉框异步加载很慢，而后端操作也就是一个简单的视图查询。在firebug的网络面板中查看时间线，发现url请求竟然耗时50多秒，这显然是不合理的。但是访问部署在生产环境中的web服务时，该下拉框异步加载并不是很慢。">
   
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <meta property="og:title" content="一次跟踪linux服务器出现内存占用过高现象的经历"/>
+  <meta property="og:title" content="Struts2序列化Action结果时的一个“坑”"/>
   <meta property="og:site_name" content="Ox Patient"/>
 
   
@@ -64,10 +65,10 @@
   <div class="post-content">
     <header>
       
-      <time datetime="2014-12-11T01:45:33.000Z"><a href="/2014/12/11/problem-solved-20141210-1/">Thu, Dec 11 2014, 9:45:33 am</a></time>
+      <time datetime="2015-04-10T02:48:38.000Z"><a href="/2015/04/10/problem-solved-20150409-1/">Fri, Apr 10 2015, 10:48:38 am</a></time>
 
   
-    <h1 class="title">一次跟踪linux服务器出现内存占用过高现象的经历</h1>
+    <h1 class="title">Struts2序列化Action结果时的一个“坑”</h1>
   
 
 
@@ -77,19 +78,18 @@
     </header>
     <div class="entry">
       
-        <p>某天早上，某现场工程人员突然打电话反映web服务器内存占用过高，当时我的第一反应就是web服务还能够提供访问吗？但是经过了解，得知跑在服务器上的web程序运行正常并且客户端访问web页面也正常，我想应该没什么大问题吧？但是该工程人员还是认为内存不应该这么高，并且认为是web程序（java开发）导致的内存占用过高。下面是现场提供的截图：</p>
-<img src="/img/20141211/01.png">
+        <h2 id="背景介绍">背景介绍</h2>
+<p>某天，在本地环境修改日志查询页面时，发现某一下拉框异步加载很慢，而后端操作也就是一个简单的视图查询。在firebug的网络面板中查看时间线，发现url请求竟然耗时50多秒，这显然是不合理的。但是访问部署在生产环境中的web服务时，该下拉框异步加载并不是很慢。<br><a id="more"></a></p>
+<h2 id="问题跟踪及解决">问题跟踪及解决</h2>
+<p>某次调试时，发现console有异常信息：<br>“at com.runman.dutylog.UserLogDaoImpl.findAll(UserLogDaoImpl.java:60)<br>at com.runman.dutylog.impl.UserLogManagerImpl.getAll(UserLogManagerImpl.java:46)”。<br>但是下拉框异步加载时，所调用action层的方法中并没有显式调用UserLogManagerImpl中的getAll方法，这是为什么呢？这就要提到所说的“坑”：</p>
+<blockquote>
 
-<img src="/img/20141211/02.png">
+<p>“Struts2在序列化action的结果时，会把action的所有公开的getter方法的结果序列化到json里，那个方法以get开头，自然也就被调用，……”</p>
+<footer><strong>http://coderbee.net/index.php/open-source/20140120/744</strong></footer></blockquote>
 
-<img src="/img/20141211/03.png"><br><a id="more"></a><br>从进程使用内存的情况来看，java进程只占到22%左右，并且JVM的参数-Xmx的值为3072M，<br>理论上，java进程最大使用的内存也就3072M左右，因此可以认为内存占用过高并不是web程序导致的。<br><br>一般说内存占用过高，肯定会影响到系统的应用，但是web页面又能够正常访问。那么内存过高的现象如何解释呢，直到看到这篇文章<a href="http://blog.licess.com/linux-memory/" target="_blank" rel="external">正确理解Linux内存占用过高的问题</a>，摘录部分内容如下：<br><blockquote>
+<p>在firebug中查看json，all果然被当作iUserLogManager的一个字段进行处理了。如何解决这个问题，只要在action层中对iUserLogManager不进行序列化就可以了（例如：使用注解@JSON(serialize=false)）。</p>
+<p>那么为什么在生产环境中，该下拉框异步加载并不是很慢，而在本地环境中却很慢？原来生产环境中的web服务与分布式缓存建立了连接，而本机环境部署的web服务并未与分布式缓存建立连接，console中输出的异常信息就是因为与分布式缓存建立连接失败导致的，并且尝试和分布式缓存建立连接这个过程很耗时间。</p>
 
-<p>最近有个月经问题，老有人问为何开机后，还没有其他服务，mem就被用完了？是不是内存泄露？是否要重启服务？只能说不要看现象，要看本质才能找到问题的根源。<br>往往给出这样的结果，怀疑内存用了90%：<br>    Mem: 4146788k total, 3825536k used, 321252k free, 213488k buffers<br>    Swap: 2650684k total, 80k used, 2650604k free, 3006404k cached<br>这样怀疑很普遍，因为很多人用惯了Windows。Windows下，可以使用任务管理器查看当前进程对于内存的消耗情况。在我看来，Windows物理内存总是留下一定的空间，就算此时物理内存有空闲时，也会让某些程序去使用虚拟内存，目的是在Windows下启动新程序时，直接分配空闲的物理内存，这样子新程序启动速度就较快，而Linux则不然。<br>而在Linux下，使用top命令看到内存占用情况：<br>Mem: 4146788k total, 3825536k used, 321252k free, 213488k buffers<br>    Swap: 2650684k total, 80k used, 2650604k free, 3006404k cached<br>这里的结果显示使用了3.8G的used，占用率达到90%。看看free的结果你还可以对比一下：<br>    $ free -m<br>    total used free shared buffers cached<br>    Mem: 4049 3784 265 0 208 2939<br>    -/+ buffers/cache: 636 3413<br>    Swap: 2588 0 2588<br>虽然MEM显示了3.7G左右的used，但是（-/+ buffers/cache）减去buffers和cache的结果可以看到，当前进程实际占用内存是636M，而可用空闲（free）内存为3.4G。<br>可以这么理解：在linux的内存分配机制中，优先使用物理内存，当物理内存还有空闲时（还够用），不会释放其占用内存，就算占用内存的程序已经被关闭了，该程序所占用的内存用来做缓存使用，对于开启过的程序、或是读取刚存取过得数据会比较快。<br>如上面的例子：使用了4G的内存，3.7G被占用，但是buuffer和cached部分作为缓存，可以使用命中率的方式提高使用效率，而且这部分缓存是根据指令随时可以释放的，我们可以认为这部分内存没有实际被使用，也可以认为它是空闲的。<br>因此查看目前进程正在实际被使用的内存，是used-(buffers+cache)，也可以认为如果swap没有大量使用，mem还是够用的，只有mem被当前进程实际占用完（没有了buffers和cache），才会使用到swap的。</p>
-</blockquote>
-
-
-<p>后来我在其中一台出现内存占用过高现象的web服务器上使用free -m命令查看了一下，<br>确实和文章所讲到的类似，截图如下：</p>
-<img src="/img/20141211/04.png">
       
     </div>
     <footer>
@@ -113,10 +113,8 @@
           <div class="clearfix"></div>
           <nav id="pagination">
   
-    <a href="/2014/12/11/problem-solved-20141211-1/" class="alignleft prev"><i class="fa fa-long-arrow-left"></i>Next</a>
   
-  
-    <a href="/2014/11/28/extjs3-note-1/" class="alignright next">Prev<i class="fa fa-long-arrow-right"></i></a>
+    <a href="/2014/12/24/extjs3-note-2/" class="alignright next">Prev<i class="fa fa-long-arrow-right"></i></a>
   
   <div class="clearfix"></div>
 </nav>
@@ -132,7 +130,7 @@
 
   
       <!-- Duoshuo Comment BEGIN -->
-<div class="ds-thread" data-thread-key="/2014/12/11/problem-solved-20141210-1/"></div>
+<div class="ds-thread" data-thread-key="/2015/04/10/problem-solved-20150409-1/"></div>
 <!-- Duoshuo Comment END -->
 <!-- Duoshuo Script BEGIN -->
 <script type="text/javascript">
